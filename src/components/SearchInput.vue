@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import iconArrow from "./../assets/icon-arrow.svg";
+import { iconArrow } from "../assets";
 
 defineProps<{
   placeholder?: string;

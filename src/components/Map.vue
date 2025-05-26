@@ -1,0 +1,24 @@
+<script setup>
+import { onMounted } from "vue";
+import { iconLocation } from "../assets";
+
+const markerIcon = L.icon({
+  iconUrl: iconLocation,
+});
+
+onMounted(() => {
+  const map = L.map("map", {
+    zoomControl: false,
+  }).setView([51.505, -0.09], 13);
+
+  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    maxZoom: 19,
+  }).addTo(map);
+
+  L.marker([51.505, -0.09], { icon: markerIcon }).addTo(map);
+});
+</script>
+
+<template>
+  <div id="map" class="w-full h-96"></div>
+</template>
