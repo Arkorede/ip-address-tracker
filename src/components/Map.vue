@@ -9,6 +9,7 @@ const markerIcon = L.icon({
 onMounted(() => {
   const map = L.map("map", {
     zoomControl: false,
+    attributionControl: false,
   }).setView([51.505, -0.09], 13);
 
   L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
@@ -20,5 +21,8 @@ onMounted(() => {
 </script>
 
 <template>
-  <div id="map" class="w-full h-96"></div>
+  <div
+    id="map"
+    class="w-full h-[calc(100vh-300px)] md:h-[calc(100vh-240px)]"
+  ></div>
 </template>
