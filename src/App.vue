@@ -1,7 +1,16 @@
-<script setup>
+<script setup lang="ts">
 import IPDetailsCard from "./components/IPDetailsCard.vue";
 import SearchInput from "./components/SearchInput.vue";
 import Map from "./components/Map.vue";
+import { onMounted } from "vue";
+import { useIPDetails } from "./composables/useIPDetails";
+
+const { fetchIPDetails, ipData, loading, error, mapCoordinates } =
+  useIPDetails();
+
+onMounted(() => {
+  fetchIPDetails();
+});
 </script>
 
 <template>
@@ -19,7 +28,10 @@ import Map from "./components/Map.vue";
     </div>
     <IPDetailsCard
       class="absolute left-1/2 transform -translate-x-1/2 top-44.5 z-30 w-[92%] px-4 md:top-[172px] mx-auto md:w-[75%]"
+      :ip-details="ipData"
+      :loading="loading"
+      :error="error"
     />
-    <Map class="relative z-10 pt-12 sm:pt-16" />
+    <Map class="relative z-10 pt-12 sm:pt-16" :coordinates="mapCoordinates" />
   </div>
 </template>

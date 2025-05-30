@@ -1,20 +1,25 @@
-import { isValidIPAddress, isValidDomain } from "@/utils/ip";
+import { isValidIPAddress, isValidDomain } from "../utils/ip";
 import { ref } from "vue";
 
-type IPDetails = {
+export type IPDetail = {
   id: number;
   label: string;
   value: string;
+};
+
+export type MapCoordinates = {
+  lat: number;
+  lng: number;
 };
 
 const apiKey = import.meta.env.VITE_IPIFY_PUBLIC_KEY;
 const baseUrl = "https://geo.ipify.org/api/v2/country,city";
 
 export function useIPDetails() {
-  const ipData = ref<IPDetails[] | null>(null);
-  const mapCoordinates = ref<{ lat: null | number; lng: null | number }>({
-    lat: null,
-    lng: null,
+  const ipData = ref<IPDetail[] | null>(null);
+  const mapCoordinates = ref<MapCoordinates>({
+    lat: 0,
+    lng: 0,
   });
   const loading = ref<boolean>(false);
   const error = ref<string | null>(null);
@@ -37,7 +42,7 @@ export function useIPDetails() {
     return url;
   };
 
-  const fetchIPDetails = async (term: string) => {
+  const fetchIPDetails = async (term?: string) => {
     loading.value = true;
     error.value = null;
 
@@ -97,7 +102,7 @@ export function useIPDetails() {
       console.error("Error fetching IP details:", err);
 
       ipData.value = null;
-      mapCoordinates.value = { lat: null, lng: null };
+      mapCoordinates.value = { lat: 0, lng: 0 };
     } finally {
       loading.value = false;
     }
@@ -105,7 +110,7 @@ export function useIPDetails() {
 
   const reset = () => {
     ipData.value = null;
-    mapCoordinates.value = { lat: null, lng: null };
+    mapCoordinates.value = { lat: 0, lng: 0 };
     loading.value = false;
     error.value = null;
   };

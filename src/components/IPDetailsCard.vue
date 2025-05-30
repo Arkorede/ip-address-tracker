@@ -1,12 +1,10 @@
 <script setup lang="ts">
 import IPDetailItem from "./IPDetailItem.vue";
+import { type IPDetail } from "./../composables/useIPDetails";
 
-const ipDetails = [
-  { id: 1, label: "IP Address", value: "192.168.1.1" },
-  { id: 2, label: "Location", value: "New York, USA" },
-  { id: 3, label: "Time Zone", value: "UTC-5:00" },
-  { id: 4, label: "ISP", value: "SpaceX Starlink" },
-];
+defineProps<{
+  ipDetails: IPDetail[] | null;
+}>();
 </script>
 
 <template>
