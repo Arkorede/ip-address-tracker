@@ -1,0 +1,122 @@
+import { isValidIPAddress, isValidDomain } from "@/utils/ip";
+import { ref } from "vue";
+
+type IPDetails = {
+  id: number;
+  label: string;
+  value: string;
+};
+
+const apiKey = import.meta.env.VITE_IPIFY_PUBLIC_KEY;
+const baseUrl = "https://geo.ipify.org/api/v2/country,city";
+
+export function useIPDetails() {
+  const ipData = ref<IPDetails[] | null>(null);
+  const mapCoordinates = ref<{ lat: null | number; lng: null | number }>({
+    lat: null,
+    lng: null,
+  });
+  const loading = ref<boolean>(false);
+  const error = ref<string | null>(null);
+
+  const buildAPIUrl = (term: string = "") => {
+    let url = `${baseUrl}?apiKey=${apiKey}`;
+
+    if (term.trim()) {
+      const trimmedTerm = term.trim();
+
+      if (isValidIPAddress(trimmedTerm)) {
+        url += `&ipAddress=${encodeURIComponent(trimmedTerm)}`;
+      } else if (isValidDomain(trimmedTerm)) {
+        url += `&domain=${encodeURIComponent(trimmedTerm)}`;
+      } else {
+        throw new Error("Please enter a valid IP address or domain name");
+      }
+    }
+
+    return url;
+  };
+
+  const fetchIPDetails = async (term: string) => {
+    loading.value = true;
+    error.value = null;
+
+    try {
+      const url = buildAPIUrl(term);
+      const response = await fetch(url);
+
+      if (!response.ok) {
+        if (response.status === 422) {
+          throw new Error("Invalid IP address or domain name");
+        } else if (response.status === 403) {
+          throw new Error("API key is invalid or quota exceeded");
+        } else {
+          throw new Error(`Failed to fetch IP data: ${response.status}`);
+        }
+      }
+
+      const data = await response.json();
+
+      if (!data.ip || !data.location) {
+        throw new Error("Invalid response");
+      }
+
+      ipData.value = [
+        {
+          id: 1,
+          label: "IP Address",
+          value: data.ip,
+        },
+        {
+          id: 2,
+          label: "Location",
+          value: `${data.location.region}, ${data.location.country}`,
+        },
+        {
+          id: 3,
+          label: "Time Zone",
+          value: `UTC${data.location.timezone || "N/A"}`,
+        },
+        {
+          id: 4,
+          label: "ISP",
+          value: data.isp || "Unknown",
+        },
+      ];
+
+      if (data.location.lat && data.location.lng) {
+        mapCoordinates.value = {
+          lat: data.location.lat,
+          lng: data.location.lng,
+        };
+      } else {
+        throw new Error("Location coordinates are not available");
+      }
+    } catch (err: any) {
+      error.value = err.message;
+      console.error("Error fetching IP details:", err);
+
+      ipData.value = null;
+      mapCoordinates.value = { lat: null, lng: null };
+    } finally {
+      loading.value = false;
+    }
+  };
+
+  const reset = () => {
+    ipData.value = null;
+    mapCoordinates.value = { lat: null, lng: null };
+    loading.value = false;
+    error.value = null;
+  };
+
+  return {
+    ipData,
+    mapCoordinates,
+    loading,
+    error,
+    fetchIPDetails,
+    reset,
+    buildAPIUrl,
+  };
+}
