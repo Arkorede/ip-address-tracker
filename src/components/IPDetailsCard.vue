@@ -18,11 +18,13 @@ defineProps<{
     >
       Loading...
     </div>
-    <IPDetailItem
-      v-for="detail in ipDetails"
-      :key="detail.id"
-      :label="detail.label"
-      :value="detail.value"
-    />
+    <template v-else-if="ipDetails && ipDetails.length > 0">
+      <IPDetailItem
+        v-for="detail in ipDetails"
+        :key="detail.id"
+        :label="detail.label"
+        :value="detail.value"
+      />
+    </template>
   </div>
 </template>

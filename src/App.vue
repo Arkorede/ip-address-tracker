@@ -8,6 +8,10 @@ import { useIPDetails } from "./composables/useIPDetails";
 const { fetchIPDetails, ipData, loading, error, mapCoordinates } =
   useIPDetails();
 
+const handleSearch = (searchTerm: string) => {
+  fetchIPDetails(searchTerm);
+};
+
 onMounted(() => {
   fetchIPDetails();
 });
@@ -24,6 +28,8 @@ onMounted(() => {
       <SearchInput
         placeholder="Search for any IP address or domain"
         class="w-full max-w-124.5 mx-auto"
+        :loading="loading"
+        @search="handleSearch"
       />
     </div>
     <IPDetailsCard

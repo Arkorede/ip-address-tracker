@@ -113,30 +113,62 @@ export function useIPDetails() {
     error.value = null;
 
     try {
-      // Simulate an API delay
-      await new Promise((resolve) => setTimeout(resolve, 1000)); // 1 second delay
+      // Validate input if provided
+      if (term && !isValidIPAddress(term) && !isValidDomain(term)) {
+        throw new Error("Please enter a valid IP address or domain name");
+      }
 
-      // Mock response data
-      const mockData = {
-        ip: "192.168.1.1",
-        location: {
-          region: "Lagos",
-          country: "Nigeria",
-          timezone: "+01:00",
-          lat: 6.5244,
-          lng: 3.3792,
+      // Simulate an API delay
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      // Create different mock responses based on the search term
+      const mockResponses = {
+        "google.com": {
+          ip: "8.8.8.8",
+          location: {
+            region: "Mountain View",
+            country: "United States",
+            timezone: "-08:00",
+            lat: 37.4223,
+            lng: -122.0842,
+          },
+          isp: "Google LLC",
         },
-        isp: "Mock ISP Ltd.",
+        "github.com": {
+          ip: "140.82.114.4",
+          location: {
+            region: "San Francisco",
+            country: "United States",
+            timezone: "-08:00",
+            lat: 37.7749,
+            lng: -122.4194,
+          },
+          isp: "GitHub Inc.",
+        },
+        default: {
+          ip: term || "192.168.1.1",
+          location: {
+            region: "Lagos",
+            country: "Nigeria",
+            timezone: "+01:00",
+            lat: 6.5244,
+            lng: 3.3792,
+          },
+          isp: "Mock ISP Ltd.",
+        },
       };
 
-      // Optionally, you can simulate errors based on input
-      if (term === "invalid") {
+      // Simulate error for specific inputs
+      if (term === "invalid" || term === "error") {
         throw new Error("Invalid IP address or domain name");
       }
 
-      const data = mockData; // Replace real fetch with mock data
+      // Select mock data based on search term
+      const mockData =
+        mockResponses[term as keyof typeof mockResponses] ||
+        mockResponses.default;
 
-      if (!data.ip || !data.location) {
+      if (!mockData.ip || !mockData.location) {
         throw new Error("Invalid response");
       }
 
@@ -144,29 +176,29 @@ export function useIPDetails() {
         {
           id: 1,
           label: "IP Address",
-          value: data.ip,
+          value: mockData.ip,
         },
         {
           id: 2,
           label: "Location",
-          value: `${data.location.region}, ${data.location.country}`,
+          value: `${mockData.location.region}, ${mockData.location.country}`,
         },
         {
           id: 3,
           label: "Time Zone",
-          value: `UTC${data.location.timezone || "N/A"}`,
+          value: `UTC${mockData.location.timezone || "N/A"}`,
         },
         {
           id: 4,
           label: "ISP",
-          value: data.isp || "Unknown",
+          value: mockData.isp || "Unknown",
         },
       ];
 
-      if (data.location.lat && data.location.lng) {
+      if (mockData.location.lat && mockData.location.lng) {
         mapCoordinates.value = {
-          lat: data.location.lat,
-          lng: data.location.lng,
+          lat: mockData.location.lat,
+          lng: mockData.location.lng,
         };
       } else {
         throw new Error("Location coordinates are not available");
@@ -174,19 +206,11 @@ export function useIPDetails() {
     } catch (err: any) {
       error.value = err.message;
       console.error("Error fetching IP details:", err);
-
       ipData.value = null;
       mapCoordinates.value = { lat: 0, lng: 0 };
     } finally {
       loading.value = false;
     }
-  };
-
-  const reset = () => {
-    ipData.value = null;
-    mapCoordinates.value = { lat: 0, lng: 0 };
-    loading.value = false;
-    error.value = null;
   };
 
   return {
@@ -195,7 +219,5 @@ export function useIPDetails() {
     loading,
     error,
     fetchIPDetails,
-    reset,
-    buildAPIUrl,
   };
 }
