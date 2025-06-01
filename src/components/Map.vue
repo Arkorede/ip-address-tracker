@@ -4,6 +4,7 @@ import { iconLocation } from "../assets";
 import { type MapCoordinates } from "./../composables/useIPDetails";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
+import Spinner from "./Spinner.vue";
 
 const props = defineProps<{
   coordinates: MapCoordinates;
@@ -112,10 +113,10 @@ watch(
 <template>
   <div class="relative w-full h-[calc(100vh-300px)] md:h-[calc(100vh-240px)]">
     <div
-      class="absolute text-4xl inset-0 flex items-center justify-center"
+      class="absolute inset-0 flex items-center justify-center"
       v-if="loading"
     >
-      Loading...
+      <Spinner />
     </div>
     <div id="map" class="h-full w-full" :class="{ 'opacity-0': loading }"></div>
   </div>
