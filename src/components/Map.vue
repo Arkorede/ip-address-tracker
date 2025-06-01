@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, computed, watch } from "vue";
+import { onMounted, computed, watch, nextTick } from "vue";
 import { iconLocation } from "../assets";
 import { type MapCoordinates } from "./../composables/useIPDetails";
 import L from "leaflet";
@@ -15,7 +15,7 @@ const props = defineProps<{
 let map: L.Map | null = null;
 let marker: L.Marker | null = null;
 
-console.log(props);
+console.log(props.coordinates);
 
 const markerIcon = L.icon({
   iconUrl: iconLocation,
@@ -25,29 +25,75 @@ const isValidCoordinates = computed(() => {
   return props.coordinates.lat !== 0 && props.coordinates.lng !== 0;
 });
 
-const shouldRenderMap = computed(() => {
+const shouldShowMap = computed(() => {
   return isValidCoordinates.value && !props.loading;
 });
 
-const initializeMap = () => {
-  if (!shouldRenderMap.value) return;
+const coordinates = computed((): [number, number] => [
+  props.coordinates.lat,
+  props.coordinates.lng,
+]);
 
-  if (map) {
-    map.remove();
+const createOrUpdateMarker = () => {
+  if (marker) {
+    marker.setLatLng(coordinates.value);
+  } else {
+    if (map) {
+      marker = L.marker(coordinates.value, { icon: markerIcon }).addTo(map);
+    }
   }
+};
 
+const createNewMap = () => {
   map = L.map("map", {
     zoomControl: false,
     attributionControl: false,
-  }).setView([props.coordinates.lat, props.coordinates.lng], 13);
+  }).setView(coordinates.value, 13);
 
   L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
     maxZoom: 19,
   }).addTo(map);
+};
 
-  marker = L.marker([props.coordinates.lat, props.coordinates.lng], {
-    icon: markerIcon,
-  }).addTo(map);
+const updateExistingMap = () => {
+  map?.setView(coordinates.value, 13);
+};
+
+const cleanUpMap = () => {
+  if (map) {
+    map.remove();
+    map = null;
+    marker = null;
+  }
+};
+
+const initializeMap = async () => {
+  console.log("Initialize map called", {
+    shouldShow: shouldShowMap.value,
+    coordinates: props.coordinates,
+    loading: props.loading,
+  });
+
+  await nextTick();
+
+  if (!shouldShowMap.value) {
+    cleanUpMap();
+    return;
+  }
+
+  const mapContainer = document.getElementById("map");
+  if (!mapContainer) {
+    console.error("Map container not found");
+    return;
+  }
+
+  if (map) {
+    updateExistingMap();
+  } else {
+    createNewMap();
+  }
+
+  createOrUpdateMarker();
 };
 
 onMounted(() => {

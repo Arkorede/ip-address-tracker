@@ -32,11 +32,6 @@ onMounted(() => {
       :loading="loading"
       :error="error"
     />
-    <Map
-      class="z-10"
-      v-if="mapCoordinates.lat !== 0 || mapCoordinates.lng !== 0"
-      :coordinates="mapCoordinates"
-      :loading="loading"
-    />
+    <Map class="z-10" :coordinates="mapCoordinates" :loading="loading" />
   </div>
 </template>
