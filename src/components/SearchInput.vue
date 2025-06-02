@@ -36,7 +36,7 @@ const handleKeyPress = (e: KeyboardEvent) => {
       v-model="searchTerm"
       @keypress="handleKeyPress"
     />
-    <div
+    <button
       class="bg-black flex items-center justify-center w-13 h-13 rounded-r-xl cursor-pointer"
       @click="handleSearch"
       :class="{ 'opacity-50 cursor-not-allowed': loading }"
@@ -47,6 +47,6 @@ const handleKeyPress = (e: KeyboardEvent) => {
         class="w-3 h-3"
         :class="{ 'animate-pulse': loading }"
       />
-    </div>
+    </button>
   </div>
 </template>
