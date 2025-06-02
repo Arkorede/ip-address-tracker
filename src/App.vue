@@ -2,10 +2,14 @@
 import IPDetailsCard from "./components/IPDetailsCard.vue";
 import SearchInput from "./components/SearchInput.vue";
 import Map from "./components/Map.vue";
-import { onMounted } from "vue";
+import { onMounted, computed } from "vue";
 import { useIPDetails } from "./composables/useIPDetails";
 
 const { fetchIPDetails, ipData, loading, mapCoordinates } = useIPDetails();
+
+const ipAddress = computed(() => {
+  return ipData.value?.find((item) => item.label === "IP Address")?.value || "";
+});
 
 const handleSearch = (searchTerm: string) => {
   fetchIPDetails(searchTerm);
@@ -32,10 +36,15 @@ onMounted(() => {
       />
     </div>
     <IPDetailsCard
-      class="absolute left-1/2 transform -translate-x-1/2 top-44.5 z-30 w-[92%] px-4 md:top-[172px] mx-auto md:w-[75%]"
+      class="absolute left-1/2 transform -translate-x-1/2 top-44.5 z-30 w-[92%] px-4 md:top-[172px] mx-auto xl:w-[75%]"
       :ip-details="ipData"
       :loading="loading"
     />
-    <Map class="z-10" :coordinates="mapCoordinates" :loading="loading" />
+    <Map
+      class="z-10"
+      :coordinates="mapCoordinates"
+      :loading="loading"
+      :ip-address="ipAddress"
+    />
   </div>
 </template>

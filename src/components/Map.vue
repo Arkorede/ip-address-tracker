@@ -8,10 +8,9 @@ import Spinner from "./Spinner.vue";
 
 const props = defineProps<{
   coordinates: MapCoordinates;
+  ipAddress: string;
   loading: boolean;
 }>();
-
-// const loading = true;
 
 let map: L.Map | null = null;
 let marker: L.Marker | null = null;
@@ -40,7 +39,10 @@ const createOrUpdateMarker = () => {
     marker.setLatLng(coordinates.value);
   } else {
     if (map) {
-      marker = L.marker(coordinates.value, { icon: markerIcon }).addTo(map);
+      marker = L.marker(coordinates.value, { icon: markerIcon })
+        .bindPopup(props.ipAddress)
+        .openPopup()
+        .addTo(map);
     }
   }
 };
