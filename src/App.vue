@@ -5,8 +5,7 @@ import Map from "./components/Map.vue";
 import { onMounted } from "vue";
 import { useIPDetails } from "./composables/useIPDetails";
 
-const { fetchIPDetails, ipData, loading, error, mapCoordinates } =
-  useIPDetails();
+const { fetchIPDetails, ipData, loading, mapCoordinates } = useIPDetails();
 
 const handleSearch = (searchTerm: string) => {
   fetchIPDetails(searchTerm);
@@ -36,7 +35,6 @@ onMounted(() => {
       class="absolute left-1/2 transform -translate-x-1/2 top-44.5 z-30 w-[92%] px-4 md:top-[172px] mx-auto md:w-[75%]"
       :ip-details="ipData"
       :loading="loading"
-      :error="error"
     />
     <Map class="z-10" :coordinates="mapCoordinates" :loading="loading" />
   </div>
