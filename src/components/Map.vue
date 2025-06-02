@@ -15,8 +15,6 @@ const props = defineProps<{
 let map: L.Map | null = null;
 let marker: L.Marker | null = null;
 
-console.log(props.coordinates);
-
 const markerIcon = L.icon({
   iconUrl: iconLocation,
 });
@@ -71,12 +69,6 @@ const cleanUpMap = () => {
 };
 
 const initializeMap = async () => {
-  console.log("Initialize map called", {
-    shouldShow: shouldShowMap.value,
-    coordinates: props.coordinates,
-    loading: props.loading,
-  });
-
   await nextTick();
 
   if (!shouldShowMap.value) {
