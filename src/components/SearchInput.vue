@@ -31,7 +31,7 @@ const handleKeyPress = (e: KeyboardEvent) => {
   <div class="flex">
     <input
       type="text"
-      class="w-full px-4 py-3 border bg-white border-gray-300 rounded-l-xl focus:outline-none"
+      class="w-full px-4 py-3 text-sm border bg-white border-gray-300 rounded-l-xl focus:outline-none min-[430px]:text-base"
       :placeholder="placeholder"
       v-model="searchTerm"
       @keypress="handleKeyPress"
